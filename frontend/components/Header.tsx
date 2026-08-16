@@ -12,6 +12,7 @@ export default function Header() {
           <Link href="/category/rajnoiti">রাজনীতি</Link>
           <Link href="/category/arthoniti">অর্থনীতি</Link>
           <Link href="/category/khela">খেলা</Link>
+            <Link href="/category/khela">আন্তর্জাতিক খবর</Link>
         </nav>
       </div>
     </header>
