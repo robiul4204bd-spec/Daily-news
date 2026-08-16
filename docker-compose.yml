@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: dailynews_db
+      POSTGRES_USER: dailynews
+      POSTGRES_PASSWORD: robiul234
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - dailynews_net
+
+  strapi:
+    image: strapi/strapi:latest
+    restart: unless-stopped
+    ports:
+      - '1337:1337'
+    environment:
+      DATABASE_CLIENT: postgres
+      DATABASE_NAME: dailynews_db
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: dailynews
+      DATABASE_PASSWORD: robiul234
+      APP_KEYS: someRandomKey
+      API_TOKEN_SALT: someRandomSalt
+      ADMIN_JWT_SECRET: someAdminSecret
+      JWT_SECRET: someJwtSecret
+    volumes:
+      - ./cms:/srv/app
+    depends_on:
+      - db
+    networks:
+      - dailynews_net
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:1337
+    volumes:
+      - ./frontend:/app
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - dailynews_net
+
+volumes:
+  db_data:
+
+networks:
+  dailynews_net:
+    driver: bridge
